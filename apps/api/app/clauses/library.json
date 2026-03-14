@@ -1,0 +1,66 @@
+[
+  {
+    "clause_id": "TX-INTRO-001",
+    "title": "Declaration",
+    "version": "v1",
+    "state": "TX",
+    "template_text": "[TEMPLATE - ATTORNEY REVIEW REQUIRED] I, {{ testator_name }}, a resident of {{ county }} County, Texas, declare this as my Last Will and Testament.",
+    "conditions": ["state == TX"]
+  },
+  {
+    "clause_id": "TX-REVOCATION-001",
+    "title": "Revocation",
+    "version": "v1",
+    "state": "TX",
+    "template_text": "[TEMPLATE - ATTORNEY REVIEW REQUIRED] I revoke all prior wills and codicils.",
+    "conditions": ["capacity_confirmations.revoke_prior_wills == true"]
+  },
+  {
+    "clause_id": "TX-EXECUTOR-001",
+    "title": "Independent Executor",
+    "version": "v1",
+    "state": "TX",
+    "template_text": "[TEMPLATE - ATTORNEY REVIEW REQUIRED] I appoint {{ executor_name }} as Independent Executor, to serve without bond if permitted.",
+    "conditions": ["fiduciaries.executor exists"]
+  },
+  {
+    "clause_id": "TX-GUARDIAN-001",
+    "title": "Guardian Nomination",
+    "version": "v1",
+    "state": "TX",
+    "template_text": "[TEMPLATE - ATTORNEY REVIEW REQUIRED] If any child is a minor, I nominate the guardian listed in this instrument.",
+    "conditions": ["family.has_minor_children == true"]
+  },
+  {
+    "clause_id": "TX-RESIDUARY-001",
+    "title": "Residuary Estate",
+    "version": "v1",
+    "state": "TX",
+    "template_text": "[TEMPLATE - ATTORNEY REVIEW REQUIRED] I devise the residue of my estate as allocated in Schedule A.",
+    "conditions": ["residuary_beneficiaries total == 100"]
+  },
+  {
+    "clause_id": "TX-SPECIFIC-GIFTS-001",
+    "title": "Specific Gifts",
+    "version": "v1",
+    "state": "TX",
+    "template_text": "[TEMPLATE - ATTORNEY REVIEW REQUIRED] The following specific bequests are made as listed in Schedule B.",
+    "conditions": ["gifts.specific_bequests not empty"]
+  },
+  {
+    "clause_id": "TX-DIGITAL-ASSETS-001",
+    "title": "Digital Assets",
+    "version": "v1",
+    "state": "TX",
+    "template_text": "[TEMPLATE - ATTORNEY REVIEW REQUIRED] My fiduciary may access and manage my digital assets consistent with Texas law.",
+    "conditions": ["special_clauses.digital_assets == true"]
+  },
+  {
+    "clause_id": "TX-SELF-PROVING-001",
+    "title": "Self-Proving Affidavit",
+    "version": "v1",
+    "state": "TX",
+    "template_text": "[TEMPLATE - ATTORNEY REVIEW REQUIRED] A self-proving affidavit is attached and incorporated for execution formalities.",
+    "conditions": ["execution_preferences.self_proving_affidavit_intent == true"]
+  }
+]
