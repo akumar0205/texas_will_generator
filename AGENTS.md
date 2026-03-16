@@ -34,32 +34,38 @@ This document provides an **agent‑friendly reference** for building, linting, 
 ### Frontend (apps/web)
 | Action | Command |
 |--------|---------|
-| **Start development server** | `npm --workspace apps/web run dev` |
-| **Build for production** | `npm --workspace apps/web run build` |
-| **Serve production build locally** | `npm --workspace apps/web run start` |
+| **Start development server** | `npm run web:dev` |
+| **Build for production** | `npm run web:build` |
+| **Start production server** | `npm run web:start` |
+| **Run tests** | `npm run web:test` |
 
-> **Note:** The top‑level `package.json` defines convenience scripts that proxy to the workspace. You can also use `npm run web:dev` etc.
+> **Note:** These scripts are defined in the top-level package.json and proxy to the workspace.
 
 ### Backend (apps/api)
 | Action | Command |
 |--------|---------|
-| **Run API (development)** | `cd apps/api && uvicorn app.main:app --reload` |
-| **Run tests** | `cd apps/api && pytest` |
-| **Install dependencies** | `cd apps/api && python -m venv .venv && source .venv/bin/activate && pip install -e .[dev]` |
+| **Run API (development)** | `npm run api:run` |
+| **Run tests** | `npm run api:test` |
+| **Install dependencies** | `cd apps/api && pip install -e .[dev]` |
+| **Format code** | `npm run api:format` |
+| **Lint code** | `npm run api:lint` |
+| **Type check** | `npm run api:typecheck` |
+
+> **Note:** These scripts are defined in the top-level package.json for convenience.
 
 ---
 
 ## Testing Commands
 
 ### Run **all** tests
-- **Frontend:** `npm --workspace apps/web run test`
-- **Backend:** `cd apps/api && pytest`
+- **Frontend:** `npm run web:test`
+- **Backend:** `npm run api:test`
 
 ### Run a **single** test
 #### Frontend (Jest)
 ```bash
 # Replace <path/to/file.test.tsx> with the test file you want to run
-npm --workspace apps/web run test -- <path/to/file.test.tsx>
+npm run web:test -- <path/to/file.test.tsx>
 ```
 
 > The `--` passes arguments through to Jest.
@@ -67,14 +73,14 @@ npm --workspace apps/web run test -- <path/to/file.test.tsx>
 #### Backend (pytest)
 ```bash
 # Replace <test_path>::<test_name> with the specific test
-cd apps/api && pytest <test_path>::<test_name>
+npm run api:test -- <test_path>::<test_name>
 ```
 
-*Example:* `cd apps/api && pytest tests/test_api.py::test_happy_path_generation_and_download`
+*Example:* `npm run api:test -- app/tests/test_api.py::test_happy_path_generation_and_download`
 
 ### Watch mode (frontend)
 ```bash
-npm --workspace apps/web run test -- --watch
+npm run web:test -- --watch
 ```
 
 ---
@@ -82,32 +88,25 @@ npm --workspace apps/web run test -- --watch
 ## Linting & Formatting
 
 ### TypeScript / JavaScript (frontend)
-The project currently relies on the TypeScript compiler for type checking. To add linting, install `eslint` and `prettier` (optional) and run:
-```bash
-# Install (once)
-npm --workspace apps/web add -D eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin prettier eslint-config-prettier
+The project uses Next.js with TypeScript. ESLint and Prettier are configured:
 
+```bash
 # Run lint
-npx eslint . --ext .ts,.tsx
+npm run web:lint
 
 # Auto‑fix
-npx eslint . --ext .ts,.tsx --fix
-```
+npm run web:lint:fix
 
-**Formatting (Prettier)**
-```bash
-npx prettier . --write "**/*.{ts,tsx,js,jsx,json,css,md}"
+# Format with Prettier
+npm run web:format
 ```
 
 ### Python (backend)
 ```bash
-# Install linting tools (once)
-pip install ruff black mypy
-
 # Run lint / type check
-ruff check .
-black . --check   # use `black .` to format
-mypy .            # static type checking
+npm run api:lint   # ruff check
+npm run api:format # black formatting
+npm run api:typecheck # mypy type checking
 ```
 
 ---
@@ -130,6 +129,7 @@ mypy .            # static type checking
 5. **Utility Functions** – Place in `utils/` and export typed functions.
 6. **Strict Types** – Never use `any`. Use generics, unions, and literal types.
 7. **JSX Formatting** – One prop per line if >2 props, close self‑closing tags (`<Component />`).
+8. **File Organization** – Follow the existing structure in `apps/web/` with components, app, lib, etc.
 
 ### Python (backend)
 1. **FastAPI Routes** – Use Pydantic models for request/response schemas. Return `Response` objects with appropriate status codes.
@@ -139,29 +139,34 @@ mypy .            # static type checking
 5. **Error Handling** – Raise `HTTPException` with clear detail; map domain errors to appropriate status codes.
 6. **Logging** – Use the standard library `logging` module; configure a JSON formatter for structured logs.
 7. **Type Hints** – Use `typing` annotations everywhere; enable `mypy --strict`.
+8. **File Organization** – Follow the existing structure in `apps/api/app/` with api, core, db, models, schemas, services.
 
 ---
 
 ## Error Handling Conventions
 - **Frontend:**
   - Throw custom `Error` subclasses for domain errors.
-  - Centralize API error handling in a hook (`useApi`) that maps HTTP status codes to UI messages.
+  - Centralize API error handling in a hook that maps HTTP status codes to UI messages.
+  - Use React error boundaries where appropriate.
 - **Backend:**
-  - Define custom exception classes in `app/exceptions.py`.
+  - Define custom exception classes in `app/exceptions.py` if needed.
   - Use FastAPI exception handlers (`@app.exception_handler`) to translate them to HTTP responses.
   - Do not expose internal stack traces to the client; log them server‑side.
+  - Return appropriate HTTP status codes (400 for client errors, 500 for server errors).
 
 ---
 
 ## Naming Conventions
 | Entity | Convention |
 |--------|------------|
-| **Files / Directories** | `kebab-case` (e.g., `beneficiary-split-editor.tsx`)
-| **Variables / Functions** | `camelCase` (TS) / `snake_case` (Python)
-| **Classes / Interfaces** | `PascalCase`
-| **Constants** | `UPPER_SNAKE_CASE`
-| **React Components** | `PascalCase` matching file name
-| **Pydantic Models** | `PascalCase` ending with `Schema` or `Model`
+| **Files / Directories** | `kebab-case` (e.g., `beneficiary-split-editor.tsx`, `risk_evaluations.py`) |
+| **Variables / Functions** | `camelCase` (TS) / `snake_case` (Python) |
+| **Classes / Interfaces** | `PascalCase` |
+| **Constants** | `UPPER_SNAKE_CASE` |
+| **React Components** | `PascalCase` matching file name |
+| **Pydantic Models** | `PascalCase` ending with `Schema` or `Model` |
+| **SQLAlchemy Models** | `PascalCase` matching table names in singular form |
+| **API Endpoints** | Use descriptive, RESTful names with hyphens (`/will/generate`) |
 
 ---
 
@@ -179,6 +184,18 @@ import { useRouter } from "next/router";
 import { fetchWill } from "@/lib/api";
 
 import styles from "./MyComponent.module.css";
+```
+
+Example (Python):
+```python
+from collections import defaultdict
+from typing import List
+
+from fastapi import FastAPI
+from sqlalchemy.orm import Session
+
+from app.models.intake import Intake
+from app.schemas.intake import IntakeData
 ```
 
 ---
@@ -215,15 +232,23 @@ No `.cursor` or Copilot instruction files are present in this repository. Agents
 ---
 
 ## Useful Scripts & Aliases
-Add the following to your `package.json` (top level) if you want shortcuts:
+The following convenience scripts are available in the top-level package.json:
 ```json
-"scripts": {
-  "web:dev": "npm --workspace apps/web run dev",
-  "web:build": "npm --workspace apps/web run build",
-  "web:test": "npm --workspace apps/web run test",
-  "api:test": "cd apps/api && pytest",
-  "api:lint": "cd apps/api && ruff check . && black . --check && mypy .",
-  "api:run": "cd apps/api && uvicorn app.main:app --reload"
+{
+  "scripts": {
+    "web:dev": "npm --workspace apps/web run dev",
+    "web:build": "npm --workspace apps/web run build",
+    "web:start": "npm --workspace apps/web run start",
+    "web:test": "npm --workspace apps/web run test",
+    "web:lint": "npm --workspace apps/web run lint",
+    "web:lint:fix": "npm --workspace apps/web run lint:fix",
+    "web:format": "npm --workspace apps/web run format",
+    "api:test": "cd apps/api && pytest",
+    "api:lint": "cd apps/api && ruff check .",
+    "api:format": "cd apps/api && black .",
+    "api:typecheck": "cd apps/api && mypy .",
+    "api:run": "cd apps/api && uvicorn app.main:app --reload"
+  }
 }
 ```
 
