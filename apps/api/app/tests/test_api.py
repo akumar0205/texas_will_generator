@@ -51,6 +51,17 @@ def test_happy_path_generation_and_download():
     will_id = r.json()["will_id"]
     d = client.get(f"/will/{will_id}/download")
     assert d.status_code == 200
+    assert d.headers["content-type"].startswith("application/pdf")
+    assert d.content.startswith(b"%PDF-1.4")
+    assert b"LAST WILL AND TESTAMENT" in d.content
+    assert b"ARTICLE I - IDENTIFICATION" in d.content
+    assert b"ATTESTATION BY WITNESSES" in d.content
+
+    affidavit = client.get(f"/will/{will_id}/download?doc=affidavit")
+    assert affidavit.status_code == 200
+    assert affidavit.headers["content-type"].startswith("application/pdf")
+    assert affidavit.content.startswith(b"%PDF-1.4")
+    assert b"SELF-PROVING AFFIDAVIT" in affidavit.content
 
 
 def test_escalation_blocks_generation():

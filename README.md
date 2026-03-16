@@ -106,14 +106,14 @@ curl -X POST http://localhost:8000/will/generate \
   -d '{"session_id":"<SESSION>"}'
 
 # download
-curl -L "http://localhost:8000/will/<WILL_ID>/download?doc=will" -o texas_will.txt
-curl -L "http://localhost:8000/will/<WILL_ID>/download?doc=affidavit" -o affidavit.txt
+curl -L "http://localhost:8000/will/<WILL_ID>/download?doc=will" -o texas_will.pdf
+curl -L "http://localhost:8000/will/<WILL_ID>/download?doc=affidavit" -o affidavit.pdf
 curl -L "http://localhost:8000/will/<WILL_ID>/download?doc=instructions" -o instructions.txt
 ```
 
 ## Known Limitations
 
-- Document output is currently `.txt` template artifacts (DOCX hooks are ready for extension).
+- Will and affidavit outputs are generated as downloadable `.pdf` files; signing instructions remain a `.txt` template artifact.
 - Assistant panel in web app is scaffolded; no live chat transport yet.
 - Frontend persistence is client-side scaffold only; no complete save/resume wiring in UI.
 - SQLite is configured for local dev only.

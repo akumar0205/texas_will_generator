@@ -133,4 +133,6 @@ def download_will(will_id: str, doc: str = "will", db: Session = Depends(get_db)
     path = generated.documents.get(doc)
     if not path or not Path(path).exists():
         raise HTTPException(status_code=404, detail="Document asset not found")
-    return FileResponse(path)
+    filename = Path(path).name
+    media_type = "application/pdf" if str(path).endswith(".pdf") else None
+    return FileResponse(path, filename=filename, media_type=media_type)

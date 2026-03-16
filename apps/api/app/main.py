@@ -1,6 +1,7 @@
 from collections import defaultdict, deque
 from time import time
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.api.routes import router
@@ -9,6 +10,13 @@ from app.db.session import Base, engine
 from app.models import intake  # noqa: F401
 
 app = FastAPI(title=settings.app_name)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.include_router(router)
 
 Base.metadata.create_all(bind=engine)
