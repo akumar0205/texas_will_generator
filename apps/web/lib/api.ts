@@ -130,3 +130,10 @@ export async function downloadWillPdf(willId: string): Promise<void> {
   anchor.remove();
   window.URL.revokeObjectURL(objectUrl);
 }
+
+export async function submitLead(email: string, source = 'landing_page'): Promise<{ id: number; email: string; created_at: string }> {
+  return apiRequest('/leads', {
+    method: 'POST',
+    body: JSON.stringify({ email, source }),
+  });
+}

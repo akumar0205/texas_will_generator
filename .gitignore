@@ -6,3 +6,5 @@ __pycache__/
 apps/api/app.db
 generated/
 .next/
+apps/web/out/
+next-env.d.ts

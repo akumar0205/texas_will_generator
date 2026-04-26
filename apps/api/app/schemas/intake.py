@@ -130,3 +130,14 @@ class WillGenerateResponse(BaseModel):
     result: RiskResult
     documents: dict
     clause_ids: list[str]
+
+
+class LeadCaptureRequest(BaseModel):
+    email: str
+    source: str = "landing_page"
+
+
+class LeadCaptureResponse(BaseModel):
+    id: int
+    email: str
+    created_at: datetime

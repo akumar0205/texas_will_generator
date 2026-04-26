@@ -6,7 +6,7 @@ from uuid import uuid4
 from pathlib import Path
 
 from app.db.session import get_db
-from app.models.intake import Intake, RiskEvaluation, GeneratedDocument, AuditLog
+from app.models.intake import Intake, RiskEvaluation, GeneratedDocument, AuditLog, LeadCapture
 from app.schemas.intake import (
     StartIntakeResponse,
     IntakeAnswerRequest,
@@ -16,6 +16,8 @@ from app.schemas.intake import (
     WillGenerateRequest,
     WillGenerateResponse,
     IntakeData,
+    LeadCaptureRequest,
+    LeadCaptureResponse,
 )
 from app.services.rules import validate_intake, risk_flags, clause_selector
 from app.services.documents import generate_docs
@@ -136,3 +138,15 @@ def download_will(will_id: str, doc: str = "will", db: Session = Depends(get_db)
     filename = Path(path).name
     media_type = "application/pdf" if str(path).endswith(".pdf") else None
     return FileResponse(path, filename=filename, media_type=media_type)
+
+
+@router.post("/leads", response_model=LeadCaptureResponse)
+def create_lead(req: LeadCaptureRequest, db: Session = Depends(get_db)):
+    existing = db.query(LeadCapture).filter(LeadCapture.email == req.email).first()
+    if existing:
+        raise HTTPException(status_code=409, detail="Email already registered")
+    lead = LeadCapture(email=req.email, source=req.source)
+    db.add(lead)
+    db.commit()
+    db.refresh(lead)
+    return LeadCaptureResponse(id=lead.id, email=lead.email, created_at=lead.created_at)

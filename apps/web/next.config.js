@@ -1,3 +1,10 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = { experimental: { typedRoutes: false } };
+const nextConfig = {
+  output: 'export',
+  images: {
+    unoptimized: true,
+  },
+  experimental: { typedRoutes: false },
+};
+
 module.exports = nextConfig;

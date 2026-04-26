@@ -53,3 +53,12 @@ class AuditLog(Base):
     event: Mapped[str] = mapped_column(String(60))
     details: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class LeadCapture(Base):
+    __tablename__ = "lead_captures"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    email: Mapped[str] = mapped_column(String(255), index=True)
+    source: Mapped[str] = mapped_column(String(40), default="landing_page")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
